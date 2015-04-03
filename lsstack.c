@@ -55,6 +55,9 @@
 #include <unistd.h> 
 #include <fcntl.h>
 
+/* Header for 64-bit registers */
+#include <sys/reg.h>
+
 #ifndef false
 #define false 0
 #endif
@@ -446,14 +449,14 @@ int grok_and_print_thread_stack(process_info *pi, int thepid)
 	TARGET_ADDRESS previous_ip;
 	printf("RIP: %d, RBP: %d\n", RIP, RBP);
 	/* Get the IP and the BP */
-	ret = read_target_userpointer(&ip,thepid,EIP * pointer_size);
+	ret = read_target_userpointer(&ip,thepid,RIP * pointer_size);
 	if (ret) {
 		if (debug_option) printf("Failed to read IP from target: %s\n", strerror(ret) );
 			return ret;
 	} else {
 		if (debug_option) printf("Read IP: 0x%lx\n",ip);
 	}
-	ret = read_target_userpointer(&bp,thepid,EBP * pointer_size);
+	ret = read_target_userpointer(&bp,thepid,RBP * pointer_size);
 	if (ret) {
 		if (debug_option) printf("Failed to read BP from target: %s\n", strerror(ret) );
 			return ret;

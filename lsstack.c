@@ -55,12 +55,15 @@
 #include <unistd.h> 
 #include <fcntl.h>
 
+#include <sys/user.h>
+#include <sys/reg.h>
+
 #ifndef false
 #define false 0
 #endif
 
-static int verbose_option = 0;
-static int debug_option = 0;
+static int verbose_option = 1;
+static int debug_option = 1;
 static int execute_option = 0;
 static int period_option = 0;
 
@@ -444,6 +447,7 @@ int grok_and_print_thread_stack(process_info *pi, int thepid)
 	TARGET_ADDRESS bp;
 	TARGET_ADDRESS previous_bp;
 	TARGET_ADDRESS previous_ip;
+	printf("RIP: %d, RBP: %d\n", RIP, RBP);
 	/* Get the IP and the BP */
 	ret = read_target_userpointer(&ip,thepid,EIP * pointer_size);
 	if (ret) {

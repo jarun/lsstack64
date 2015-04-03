@@ -70,7 +70,7 @@ static const char* append_file = NULL;
 
 static int pointer_size = 4; /* DBDB there has to be an official place to get this from */
 
-typedef Elf32_Addr TARGET_ADDRESS;
+typedef Elf64_Addr TARGET_ADDRESS;
 
 struct _symbol_entry {
 	TARGET_ADDRESS value;
@@ -205,7 +205,7 @@ void add_new_symbol(process_info *pi, symbol_entry *symbol)
 	symbol->next = temp;
 }
 
-int symbol_entry_from_asymbol(process_info *pi, symbol_entry **outsym, asymbol *insym, TARGET_ADDRESS base_address)
+int symbol_entry_from_asymbol(symbol_entry **outsym, asymbol *insym, TARGET_ADDRESS base_address)
 {
 	int ret = 0;
 	int size = 0;
@@ -232,7 +232,7 @@ int get_symbol_address(TARGET_ADDRESS *address, process_info *pi, char *symbol)
 	if (debug_option) printf("Fetching address for symbol: %s\n",symbol);
 	for (sym = pi->symbols; sym; sym = sym->next) {
 		if (0 == strcmp(sym->name,symbol)) {
-			if (debug_option) printf("Found symbol, value: 0x%x\n",sym->value);
+			if (debug_option) printf("Found symbol, value: 0x%lx\n",sym->value);
 			found = 1;
 			*address = sym->value;
 		}
@@ -305,7 +305,7 @@ int read_target_word(int *value, process_info *pi, TARGET_ADDRESS address)
 	return ret;
 }
 
-int read_target_userpointer(TARGET_ADDRESS *value, process_info *pi, int thepid, TARGET_ADDRESS address)
+int read_target_userpointer(TARGET_ADDRESS *value, int thepid, TARGET_ADDRESS address)
 {
 	int ret = 0;
 	ret = ptrace(PTRACE_PEEKUSER, thepid, address, 0);
@@ -338,7 +338,7 @@ int read_target_memory(char *value, size_t length, process_info *pi, TARGET_ADDR
 {
 	/* We need to read word-aligned, otherwise ptrace blows up */
 	int ret = 0;
-	int offset = 0;
+	size_t offset = 0;
 	for (offset = 0; offset < length; offset++ ) {
 		ret = read_target_byte(value+offset, pi, address + offset);
 		if (errno) {
@@ -362,14 +362,14 @@ int read_target_string(char **value, process_info *pi, TARGET_ADDRESS address)
 	do {
 		ret = read_target_byte(&byte,pi,address + length);	
 		if (ret) {
-			fprintf(stderr,"Failed to read string length from target address 0x%x : %s\n",address+length,strerror(ret));
+			fprintf(stderr,"Failed to read string length from target address 0x%lx : %s\n",address+length,strerror(ret));
 			return ret;
 		}
 		if (byte) {
 			length++;
 		}
 	} while (byte);
-	if (debug_option) printf("read_target_string from address 0x%x, length=%d\n",address,length);
+	if (debug_option) printf("read_target_string from address 0x%lx, length=%d\n",address,length);
 	/* Now allocate memory for the string and terminator */
 	*value = malloc(length + 1);
 	if (NULL == *value) {
@@ -394,9 +394,9 @@ void grok_and_print_program_counter(TARGET_ADDRESS pc, process_info *pi)
 	/* Get the symbol for this address */
 	ret = get_symbol_for_address(&symbol,pi,pc,0);
 	if (ret) {
-		printf("0x%08x", pc);
+		printf("0x%08lx", pc);
 	} else {	
-		printf("0x%08x in %s", pc, symbol);
+		printf("0x%08lx in %s", pc, symbol);
 	}
 }
 
@@ -423,7 +423,7 @@ int grok_and_print_function_arguments(TARGET_ADDRESS previous_bp,TARGET_ADDRESS 
 	for (x = 2; x < (number_of_arguments + 2); x++) {
 		int parameter = 0;
 		TARGET_ADDRESS argument_pointer = previous_bp + (pointer_size * x);
-		if (debug_option) printf("Reading argument from address 0x%08x\n", argument_pointer);
+		if (debug_option) printf("Reading argument from address 0x%08lx\n", argument_pointer);
 		ret = read_target_word(&parameter, pi, argument_pointer);
 		if (ret) {
 			fprintf(stderr, "Failed to read parameter from target: %s\n", strerror(ret) );
@@ -445,19 +445,19 @@ int grok_and_print_thread_stack(process_info *pi, int thepid)
 	TARGET_ADDRESS previous_bp;
 	TARGET_ADDRESS previous_ip;
 	/* Get the IP and the BP */
-	ret = read_target_userpointer(&ip,pi,thepid,EIP * pointer_size);
+	ret = read_target_userpointer(&ip,thepid,EIP * pointer_size);
 	if (ret) {
 		if (debug_option) printf("Failed to read IP from target: %s\n", strerror(ret) );
 			return ret;
 	} else {
-		if (debug_option) printf("Read IP: 0x%x\n",ip);
+		if (debug_option) printf("Read IP: 0x%lx\n",ip);
 	}
-	ret = read_target_userpointer(&bp,pi,thepid,EBP * pointer_size);
+	ret = read_target_userpointer(&bp,thepid,EBP * pointer_size);
 	if (ret) {
 		if (debug_option) printf("Failed to read BP from target: %s\n", strerror(ret) );
 			return ret;
 	} else {
-		if (debug_option) printf("Read BP: 0x%x\n",bp);
+		if (debug_option) printf("Read BP: 0x%lx\n",bp);
 	}
 	/* walk up the stack */
 	previous_bp = bp;
@@ -472,7 +472,7 @@ int grok_and_print_thread_stack(process_info *pi, int thepid)
 			fprintf(stderr,"Failed to read next BP from target: %s\n", strerror(ret) );
 			return ret;
 		} else {
-			if (debug_option) printf("Read next BP: 0x%x\n", next_bp);
+			if (debug_option) printf("Read next BP: 0x%lx\n", next_bp);
 		}
 		
 		ret = read_target_pointer(&next_ip,pi,previous_bp + pointer_size);
@@ -480,7 +480,7 @@ int grok_and_print_thread_stack(process_info *pi, int thepid)
 			fprintf(stderr,"Failed to read next IP from target: %s\n", strerror(ret) );
 			return ret;
 		} else {
-			if (debug_option) printf("Read next IP: 0x%x\n", next_ip);
+			if (debug_option) printf("Read next IP: 0x%lx\n", next_ip);
 		}
 		
 		grok_and_print_program_counter(previous_ip, pi);
@@ -563,7 +563,7 @@ int grok_threads(process_info *pi)
 			if (debug_option) printf("Failed to find thread symbol %s\n",magic_names[loops]);
 			break;
 		} else {
-			if (debug_option) printf("Read thread symbol %s  -> 0x%x\n",magic_names[loops],magic_addresses[loops]);
+			if (debug_option) printf("Read thread symbol %s  -> 0x%lx\n",magic_names[loops],magic_addresses[loops]);
 		}
 	}
 
@@ -599,14 +599,14 @@ int grok_threads(process_info *pi)
 			fprintf(stderr, "Failed to read initial thread descriptor from target: %s\n",strerror(ret));
 			return ret;
 		} else {
-			if (debug_option) printf("Initial thread descriptor: 0x%08x\n", initial_thread_descriptor);
+			if (debug_option) printf("Initial thread descriptor: 0x%08lx\n", initial_thread_descriptor);
 		}
 		ret = read_target_pointer(&manager_thread_descriptor,pi,magic_addresses[3]);
 		if (ret) {
 			fprintf(stderr, "Failed to read manager thread descriptor from target: %s\n",strerror(ret));
 			return ret;
 		} else {
-			if (debug_option) printf("Manager thread descriptor: 0x%08x\n", manager_thread_descriptor);
+			if (debug_option) printf("Manager thread descriptor: 0x%08lx\n", manager_thread_descriptor);
 		}
 		ret = read_target_word(&handle_size,pi,magic_addresses[4]);
 		if (ret) {
@@ -640,7 +640,7 @@ int grok_threads(process_info *pi)
 				fprintf(stderr,"Failed to read descriptor address from target: %s\n", strerror(ret));
 				return ret;
 			} else {
-				if (debug_option) printf("Descriptor Address: 0x%x\n",descriptor_address);
+				if (debug_option) printf("Descriptor Address: 0x%lx\n",descriptor_address);
 			}
 			ret = read_target_word(&thread_pid,pi,descriptor_address + pid_offset);
 			if (ret) {
@@ -680,8 +680,8 @@ int process_symbol(process_info *pi, asymbol *sym, TARGET_ADDRESS base_address)
 {
 	int ret = 0;
 	symbol_entry *outsym = NULL;
-	if (debug_option) printf("Groking symbol: %s -> 0x%llx\n",bfd_asymbol_name(sym), bfd_asymbol_value(sym) + base_address);
-	ret = symbol_entry_from_asymbol(pi,&outsym,sym, base_address);
+	if (debug_option) printf("Groking symbol: %s -> 0x%lx\n",bfd_asymbol_name(sym), bfd_asymbol_value(sym) + base_address);
+	ret = symbol_entry_from_asymbol(&outsym,sym, base_address);
 	if (!ret) {
 		add_new_symbol(pi,outsym);
 	}
@@ -771,7 +771,7 @@ int dynamic_libs_present(process_info *pi)
 				return 0;
 			} else {
 				if (debug_option) {
-					printf("Read ElfW(Dyn) from address 0x%x, tag=%d, value=0x%x\n",dynamic,thisdyn.d_tag,thisdyn.d_un.d_ptr);
+					printf("Read ElfW(Dyn) from address 0x%lx, tag=%ld, value=0x%lx\n",dynamic,thisdyn.d_tag,thisdyn.d_un.d_ptr);
 				}
 			}
 			if (DT_NULL == thisdyn.d_tag) {
@@ -800,7 +800,7 @@ int dynamic_libs_present(process_info *pi)
 			if (ret) {
 				if (debug_option) printf("Failed to read link map address.\n");
 			} else {
-				if (debug_option) printf("Read r_map: 0x%x\n",link_map_address);
+				if (debug_option) printf("Read r_map: 0x%lx\n",link_map_address);
 				pi->link_map_head = link_map_address;
 				pi->link_map_current = link_map_address;
 			}
@@ -830,7 +830,7 @@ int get_next_so_file_name(char** file_name, process_info *pi, TARGET_ADDRESS *ba
 		fprintf(stderr,"Failed to read link map structure from target.\n");
 		return ret;
 	} else {
-		if (debug_option) printf("Read link_map entry from address 0x%x, base=0x%x, name=0x%x, next=0x%x\n",(TARGET_ADDRESS)lm.l_addr,pi->link_map_current,(TARGET_ADDRESS)lm.l_name,(TARGET_ADDRESS)lm.l_next);
+		if (debug_option) printf("Read link_map entry from address 0x%lx, base=0x%lx, name=0x%lx, next=0x%lx\n",(TARGET_ADDRESS)lm.l_addr,pi->link_map_current,(TARGET_ADDRESS)lm.l_name,(TARGET_ADDRESS)lm.l_next);
 	}
 	ret = read_target_string(file_name,pi,(TARGET_ADDRESS)lm.l_name);
 	if (ret) {

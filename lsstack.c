@@ -282,7 +282,7 @@ int get_symbol_for_address(char** symbol, process_info *pi, TARGET_ADDRESS addre
 
 /* Target memory read helper functions */
 
-int read_target_pointer(TARGET_ADDRESS *value, process_info *pi, TARGET_ADDRESS address)
+TARGET_ADDRESS read_target_pointer(TARGET_ADDRESS *value, process_info *pi, TARGET_ADDRESS address)
 {
 	TARGET_ADDRESS ret = 0;
 	ret = ptrace(PTRACE_PEEKDATA, pi->pid, address, 0);
@@ -295,7 +295,7 @@ int read_target_pointer(TARGET_ADDRESS *value, process_info *pi, TARGET_ADDRESS 
 	return ret;
 }
 
-int read_target_word(int *value, process_info *pi, TARGET_ADDRESS address)
+TARGET_ADDRESS read_target_word(TARGET_ADDRESS *value, process_info *pi, TARGET_ADDRESS address)
 {
 	TARGET_ADDRESS ret = 0;
 	ret = ptrace(PTRACE_PEEKDATA, pi->pid, address, 0);
@@ -308,7 +308,7 @@ int read_target_word(int *value, process_info *pi, TARGET_ADDRESS address)
 	return ret;
 }
 
-int read_target_userpointer(TARGET_ADDRESS *value, int thepid, TARGET_ADDRESS address)
+TARGET_ADDRESS read_target_userpointer(TARGET_ADDRESS *value, int thepid, TARGET_ADDRESS address)
 {
 	TARGET_ADDRESS ret = 0;
 	ret = ptrace(PTRACE_PEEKUSER, thepid, address, 0);
@@ -397,9 +397,9 @@ void grok_and_print_program_counter(TARGET_ADDRESS pc, process_info *pi)
 	/* Get the symbol for this address */
 	ret = get_symbol_for_address(&symbol,pi,pc,0);
 	if (ret) {
-		printf("0x%08lx", pc);
+		printf("0x%016lx \n", pc);
 	} else {	
-		printf("0x%08lx in %s", pc, symbol);
+		printf("0x%016lx in %s \n", pc, symbol);
 	}
 }
 
@@ -409,40 +409,38 @@ void grok_and_print_program_counter(TARGET_ADDRESS pc, process_info *pi)
    For now, let's set a maximum number of arguments we want to print.
  */
 
-static int maximum_number_of_arguments = 4;
+static TARGET_ADDRESS maximum_number_of_arguments = 4;
 
 int grok_and_print_function_arguments(TARGET_ADDRESS previous_bp,TARGET_ADDRESS next_bp, process_info *pi)
 {
-	int ret = 0;
-	int x = 0;
-	int number_of_arguments = ((next_bp - previous_bp) / pointer_size) - 2;
-	char* comma = "";
+	TARGET_ADDRESS ret = 0;
+	TARGET_ADDRESS x = 0;
+	TARGET_ADDRESS number_of_arguments = ((next_bp - previous_bp) / pointer_size) - 2;
 	
-	if (debug_option) printf("Found %d arguments\n", number_of_arguments);
+	if (debug_option) printf("Found %ld arguments\n", number_of_arguments);
 	if (number_of_arguments > maximum_number_of_arguments) {
 		number_of_arguments = maximum_number_of_arguments;
 	}
-	printf(" (");
+	printf("(\n");
 	for (x = 2; x < (number_of_arguments + 2); x++) {
-		int parameter = 0;
+		TARGET_ADDRESS parameter = 0;
 		TARGET_ADDRESS argument_pointer = previous_bp + (pointer_size * x);
-		if (debug_option) printf("Reading argument from address 0x%08lx\n", argument_pointer);
+		if (debug_option) printf("Reading argument from address 0x%016lx:", argument_pointer);
 		ret = read_target_word(&parameter, pi, argument_pointer);
 		if (ret) {
 			fprintf(stderr, "Failed to read parameter from target: %s\n", strerror(ret) );
 			return ret;
 		} else {
-			printf("%s0x%08x",comma,parameter);
+			printf("  0x%016lx\n",parameter);
 		}
-		comma = " ,";
 	}
 	printf(")\n");
 	return ret;
 }
 
-int grok_and_print_thread_stack(process_info *pi, int thepid)
+TARGET_ADDRESS grok_and_print_thread_stack(process_info *pi, int thepid)
 {
-	int ret = 0;
+	TARGET_ADDRESS ret = 0;
 	TARGET_ADDRESS ip;
 	TARGET_ADDRESS bp;
 	TARGET_ADDRESS previous_bp;
@@ -538,9 +536,9 @@ int grok_and_print_stacks(process_info *pi)
 
 int grok_threads(process_info *pi)
 {
-	int ret = 0;
+	TARGET_ADDRESS ret = 0;
 	int thread_test_positive = 0;
-	int loops = 0;
+	TARGET_ADDRESS loops = 0;
 	
 	/* Magic interaction with the pthread library here, copied from GDB */
 	
@@ -574,13 +572,13 @@ int grok_threads(process_info *pi)
 	
 	if (thread_test_positive) {
 		/* we think that we have threads */
-		int number_of_threads = 0;
+		TARGET_ADDRESS number_of_threads = 0;
 		int *thread_pid_array = NULL;
 		
 		TARGET_ADDRESS handle_array = magic_addresses[1];
-		int pid_offset = 0;
-		int descriptor_offset = 0;
-		int handle_size = 0;
+		TARGET_ADDRESS pid_offset = 0;
+		TARGET_ADDRESS descriptor_offset = 0;
+		TARGET_ADDRESS handle_size = 0;
 		TARGET_ADDRESS initial_thread_descriptor, manager_thread_descriptor;
 		
 		/* How many ? */
@@ -589,7 +587,7 @@ int grok_threads(process_info *pi)
 			fprintf(stderr, "Failed to read number of threads from target: %s\n",strerror(ret));
 			return ret;
 		} else {
-			if (debug_option) printf("Found %d threads\n", number_of_threads);
+			if (debug_option) printf("Found %ld threads\n", number_of_threads);
 		}
 				
 		thread_pid_array = (int*) calloc(number_of_threads + 1, sizeof(int));
@@ -617,28 +615,28 @@ int grok_threads(process_info *pi)
 			fprintf(stderr, "Failed to read handle size from target: %s\n",strerror(ret));
 			return ret;
 		} else {
-			if (debug_option) printf("Handle Size: %d\n", handle_size);
+			if (debug_option) printf("Handle Size: %ld\n", handle_size);
 		}
 		ret = read_target_word(&pid_offset,pi,magic_addresses[6]);
 		if (ret) {
 			fprintf(stderr, "Failed to read pid offset from target: %s\n",strerror(ret));
 			return ret;
 		} else {
-			if (debug_option) printf("Pid offset: %d\n", pid_offset);
+			if (debug_option) printf("Pid offset: %ld\n", pid_offset);
 		}
 		ret = read_target_word(&descriptor_offset,pi,magic_addresses[5]);
 		if (ret) {
 			fprintf(stderr, "Failed to read descriptor offset from target: %s\n",strerror(ret));
 			return ret;
 		} else {
-			if (debug_option) printf("Descriptor offset: %d\n", descriptor_offset);
+			if (debug_option) printf("Descriptor offset: %ld\n", descriptor_offset);
 		}
 
 		/* Fill in the pid array, attaching as we go */
 		
 		for (loops = 0; loops < number_of_threads; loops++) {
 			TARGET_ADDRESS descriptor_address;
-			int thread_pid = 0;
+			TARGET_ADDRESS thread_pid = 0;
 			ret = read_target_pointer(&descriptor_address,pi,handle_array + descriptor_offset + (handle_size * loops));
 			if (ret) {
 				fprintf(stderr,"Failed to read descriptor address from target: %s\n", strerror(ret));
@@ -651,7 +649,7 @@ int grok_threads(process_info *pi)
 				fprintf(stderr,"Failed to read thread pid from target: %s\n", strerror(ret));
 				return ret;
 			} else {
-				if (debug_option) printf("Thread PID: %d\n",thread_pid);
+				if (debug_option) printf("Thread PID: %ld\n",thread_pid);
 			}
 			
 			if (descriptor_address == initial_thread_descriptor) {
@@ -662,10 +660,10 @@ int grok_threads(process_info *pi)
 				}
 			}
 			
-			if (thread_pid != pi->pid) {
+			if ((int)thread_pid != pi->pid) {
 				ret = attach_thread(thread_pid);
 				if (ret) {
-					fprintf(stderr,"Failed to attach to target thread %d : %s\n", thread_pid, strerror(ret) );
+					fprintf(stderr,"Failed to attach to target thread %ld : %s\n", thread_pid, strerror(ret) );
 					return ret;
 				}
 			}

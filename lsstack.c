@@ -310,7 +310,7 @@ int read_target_word(int *value, process_info *pi, TARGET_ADDRESS address)
 
 int read_target_userpointer(TARGET_ADDRESS *value, int thepid, TARGET_ADDRESS address)
 {
-	int ret = 0;
+	TARGET_ADDRESS ret = 0;
 	ret = ptrace(PTRACE_PEEKUSER, thepid, address, 0);
 	if (errno) {
 		ret = errno;
@@ -447,21 +447,21 @@ int grok_and_print_thread_stack(process_info *pi, int thepid)
 	TARGET_ADDRESS bp;
 	TARGET_ADDRESS previous_bp;
 	TARGET_ADDRESS previous_ip;
-	printf("RIP: %d, RBP: %d\n", RIP, RBP);
+	if (debug_option) printf("RIP: %d, RBP: %d\n", RIP, RBP);
 	/* Get the IP and the BP */
 	ret = read_target_userpointer(&ip,thepid,RIP * pointer_size);
 	if (ret) {
-		if (debug_option) printf("Failed to read IP from target: %s\n", strerror(ret) );
+		if (debug_option) printf("Failed to read RIP from target: %s\n", strerror(ret) );
 			return ret;
 	} else {
-		if (debug_option) printf("Read IP: 0x%lx\n",ip);
+		if (debug_option) printf("Read RIP: 0x%lx\n",ip);
 	}
 	ret = read_target_userpointer(&bp,thepid,RBP * pointer_size);
 	if (ret) {
-		if (debug_option) printf("Failed to read BP from target: %s\n", strerror(ret) );
+		if (debug_option) printf("Failed to read RBP from target: %s\n", strerror(ret) );
 			return ret;
 	} else {
-		if (debug_option) printf("Read BP: 0x%lx\n",bp);
+		if (debug_option) printf("Read RBP: 0x%lx\n",bp);
 	}
 	/* walk up the stack */
 	previous_bp = bp;

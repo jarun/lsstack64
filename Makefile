@@ -1,7 +1,7 @@
 
 
 lsstack : lsstack.c
-	gcc -g -o lsstack -Wall -lbfd -liberty lsstack.c
+	gcc -W -Wall -g -o lsstack lsstack.c -lbfd -liberty
 
 clean:
 	rm -f lsstack

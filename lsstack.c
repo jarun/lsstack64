@@ -55,9 +55,6 @@
 #include <unistd.h> 
 #include <fcntl.h>
 
-#include <sys/user.h>
-#include <sys/reg.h>
-
 #ifndef false
 #define false 0
 #endif
@@ -71,7 +68,7 @@ static int wait_loops = 20;
 static int wait_time = 1;
 static const char* append_file = NULL;
 
-static int pointer_size = 4; /* DBDB there has to be an official place to get this from */
+static int pointer_size = sizeof(void*); /* DBDB there has to be an official place to get this from */
 
 typedef Elf64_Addr TARGET_ADDRESS;
 

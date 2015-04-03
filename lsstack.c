@@ -103,7 +103,7 @@ static void msleep(int msecs)
 
 static int attach_target(int thepid)
 {
-	int ret;
+	TARGET_ADDRESS ret;
 	int waitstatus;
 	int x;
 
@@ -122,7 +122,7 @@ static int attach_target(int thepid)
 	while (x < wait_loops) {
 		ret = waitpid(thepid, &waitstatus, WUNTRACED | WNOHANG);
 		if (debug_option) {
-			printf("waitpid after attach returned: %d, status=%d\n",ret, waitstatus);
+			printf("waitpid after attach returned: %ld, status=%d\n",ret, waitstatus);
 		}
 		if (WIFSTOPPED(waitstatus)) {
 			return 0;
@@ -145,7 +145,7 @@ static int attach_target(int thepid)
 
 static int attach_thread(int threadpid)
 {
-	int ret;
+	TARGET_ADDRESS ret;
 	int waitstatus;
 
 	if (debug_option) printf("Attaching to the target thread %d...\n", threadpid);
@@ -167,7 +167,7 @@ static int attach_thread(int threadpid)
 
 static int detatch_target(process_info *pi)
 {
-	int ret;
+	TARGET_ADDRESS ret;
 	if (pi->threads_present_flag) {
 		int thread_pid = 0;
 		int x = 0;
@@ -176,12 +176,12 @@ static int detatch_target(process_info *pi)
 			thread_pid = (pi->thread_pids)[x];
 			if (debug_option) printf("Detatching from thread %d\n", thread_pid);
 			ret = ptrace(PTRACE_CONT, thread_pid, 1, 0);
-			if (debug_option) printf("ptrace(PTRACE_CONT) returned: %d\n", ret);
+			if (debug_option) printf("ptrace(PTRACE_CONT) returned: %ld\n", ret);
 		}
 	}
 	if (debug_option) printf("Detaching from target...\n");
 	ret = ptrace(PTRACE_DETACH, pi->pid, 0, 0);
-	if (debug_option) printf("ptrace(PTRACE_DETACH) returned: %d\n", ret);
+	if (debug_option) printf("ptrace(PTRACE_DETACH) returned: %ld\n", ret);
 	return ret;
 }
 
@@ -284,7 +284,7 @@ int get_symbol_for_address(char** symbol, process_info *pi, TARGET_ADDRESS addre
 
 int read_target_pointer(TARGET_ADDRESS *value, process_info *pi, TARGET_ADDRESS address)
 {
-	int ret = 0;
+	TARGET_ADDRESS ret = 0;
 	ret = ptrace(PTRACE_PEEKDATA, pi->pid, address, 0);
 	if (errno) {
 		ret = errno;
@@ -297,7 +297,7 @@ int read_target_pointer(TARGET_ADDRESS *value, process_info *pi, TARGET_ADDRESS 
 
 int read_target_word(int *value, process_info *pi, TARGET_ADDRESS address)
 {
-	int ret = 0;
+	TARGET_ADDRESS ret = 0;
 	ret = ptrace(PTRACE_PEEKDATA, pi->pid, address, 0);
 	if (errno) {
 		ret = errno;
@@ -323,7 +323,7 @@ int read_target_userpointer(TARGET_ADDRESS *value, int thepid, TARGET_ADDRESS ad
 
 int read_target_byte(char *value, process_info *pi, TARGET_ADDRESS address)
 {
-	int ret = 0;
+	TARGET_ADDRESS ret = 0;
 	/* Read a word at the target address, word aligned */
 	TARGET_ADDRESS aligned_address = address & ~(pointer_size - 1);
 	int byte = address - aligned_address;

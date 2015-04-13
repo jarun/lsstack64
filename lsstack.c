@@ -445,7 +445,7 @@ TARGET_ADDRESS grok_and_print_thread_stack(process_info *pi, int thepid)
 	TARGET_ADDRESS bp;
 	TARGET_ADDRESS previous_bp;
 	TARGET_ADDRESS previous_ip;
-	if (debug_option) printf("RIP: %d, RBP: %d\n", RIP, RBP);
+	if (debug_option) printf("RIP: %d, RBP: %d, pi->pid: %d\n", RIP, RBP, pi->pid);
 	/* Get the IP and the BP */
 	ret = read_target_userpointer(&ip,thepid,RIP * pointer_size);
 	if (ret) {
@@ -471,7 +471,7 @@ TARGET_ADDRESS grok_and_print_thread_stack(process_info *pi, int thepid)
 		
 		ret = read_target_pointer(&next_bp,pi,previous_bp);
 		if (ret) {
-			fprintf(stderr,"Failed to read next BP from target: %s\n", strerror(ret) );
+			fprintf(stderr,"Failed to read next BP from target: errno: %ld (%s)\n", ret, strerror(ret) );
 			return ret;
 		} else {
 			if (debug_option) printf("Read next BP: 0x%lx\n", next_bp);

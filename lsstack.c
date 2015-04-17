@@ -1,9 +1,5 @@
-/*                                                                                                                                                   
- * A simple Tic-Tac-Toe Puzzle state checker
- * Uses bitwise operators heavily
- *
- * Author: Arun Prakash Jana <engineerarun@gmail.com>
- * Copyright (C) 2014, 2015 by Arun Prakash Jana <engineerarun@gmail.com>
+/*
+ * A modified version of lsstack utility for x86_64 Linux
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

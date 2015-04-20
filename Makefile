@@ -4,7 +4,7 @@ lsstack: lsstack.c
 	gcc -W -Wall -g -o lsstack64 lsstack.c -lbfd -liberty
 
 unwind: unwind.c
-	gcc -W -Wall -g -o unwind unwind.c -lunwind-x86_64
+	gcc -W -Wall -g -o unwind unwind.c -lunwind-x86_64 -lunwind-ptrace
 
 clean:
 	rm -f lsstack64

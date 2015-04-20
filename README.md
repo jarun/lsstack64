@@ -13,3 +13,4 @@ http://lxr.free-electrons.com/source/arch/powerpc/boot/elf.h#L12
 http://linux.die.net/man/2/ptrace  
 http://linux.die.net/include/sys/user.h  
 http://lxr.free-electrons.com/source/arch/x86/include/asm/ptrace.h?v=3.3  
+http://manpages.ubuntu.com/manpages/trusty/en/man3/libunwind-ptrace.3.html  

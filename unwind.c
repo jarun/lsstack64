@@ -20,20 +20,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <errno.h>
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/ptrace.h>
 
 int main(int argc, char **argv)
 {
 	unw_addr_space_t addrspace;
-	struct UPT_info *uptinfo;
+	struct UPT_info *uptinfo = NULL;
 	unw_accessors_t accessors;
 	unw_cursor_t cursor;
 	unw_word_t RIP, RBP;
 
 	pid_t PID = 1;
-	int ret = 0;
+	int ret = 0, wait_loops = 20, wait_time = 1000, waitstatus, stopped = 0;
 
 	if (argc !=2) {
 		fprintf(stderr, "Usage: unwind PID\n");
@@ -52,6 +56,26 @@ int main(int argc, char **argv)
 	if (!addrspace) {
 		fprintf(stderr, "unw_create_addr_space failed\n");
 		return -1;
+	}
+
+        ret = ptrace(PTRACE_ATTACH, PID, NULL, NULL);
+        if (0 != ret && 0 != errno) {
+                ret = errno;    
+                return ret; 
+        }
+
+	while (wait_loops-- > 0) {
+		ret = waitpid(PID, &waitstatus, WUNTRACED | WNOHANG);
+		if (WIFSTOPPED(waitstatus)) {
+			stopped = 1;
+			break;
+		}
+		usleep(wait_time);
+	}
+
+	if (!stopped) {
+		fprintf(stderr, "Traget process couldn't be stopped\n");
+		goto bail;
 	}
 
 	uptinfo = (struct UPT_info *)_UPT_create(PID);
@@ -75,6 +99,10 @@ int main(int argc, char **argv)
 	fprintf(stdout, "RBP: 0x%lx\n", RBP);
 
 bail:
+	if (uptinfo)
+		_UPT_destroy(uptinfo);
+
 	unw_destroy_addr_space(addrspace);
+
 	return 0;
 }

@@ -29,7 +29,11 @@ int main(int argc, char **argv)
 	unw_addr_space_t addrspace;
 	struct UPT_info *uptinfo;
 	unw_accessors_t accessors;
+	unw_cursor_t cursor;
+	unw_word_t RIP, RBP;
+
 	pid_t PID = 1;
+	int ret = 0;
 
 	if (argc !=2) {
 		fprintf(stderr, "Usage: unwind PID\n");
@@ -41,6 +45,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
+	fprintf(stdout, "Tracing PID: %d\n", PID);
+
 	/* Create address space for little endian */
 	addrspace = unw_create_addr_space(&accessors, 0);
 	if (!addrspace) {
@@ -51,9 +57,24 @@ int main(int argc, char **argv)
 	uptinfo = (struct UPT_info *)_UPT_create(PID);
 	if (!uptinfo) {
 		fprintf(stderr, "_UPT_create failed\n");
-		return -1;
+		goto bail;
 	}
 
+	ret = unw_init_remote(&cursor, addrspace, uptinfo);
+	if (ret < 0) {
+		fprintf(stderr, "unw_init_remote failed\n");
+		goto bail;
+	}
+
+	if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RBP, &RBP)) {
+		fprintf(stderr, "unw_get_reg RIP/RBP failed\n");
+		goto bail;
+	}
+
+	fprintf(stdout, "RIP: 0x%lx\n", RIP);
+	fprintf(stdout, "RBP: 0x%lx\n", RBP);
+
+bail:
 	unw_destroy_addr_space(addrspace);
 	return 0;
 }

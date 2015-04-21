@@ -35,7 +35,6 @@ int main(int argc, char **argv)
 {
 	unw_addr_space_t addrspace;
 	struct UPT_info *uptinfo = NULL;
-	unw_accessors_t accessors;
 	unw_cursor_t cursor;
 	unw_word_t RIP, RBP;
 
@@ -63,7 +62,7 @@ int main(int argc, char **argv)
 	}
 
 	/* Create address space for little endian */
-	addrspace = unw_create_addr_space(&accessors, 0);
+	addrspace = unw_create_addr_space(&_UPT_accessors, 0);
 	if (!addrspace) {
 		fprintf(stderr, "unw_create_addr_space failed\n");
 		return -1;

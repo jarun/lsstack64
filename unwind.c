@@ -34,6 +34,8 @@
 
 #define WAIT_TIME 1000
 
+int current_log_level = DEBUG;
+
 int process_stack(pid_t PID)
 {
 	unw_addr_space_t addrspace;

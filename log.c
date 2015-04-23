@@ -20,18 +20,19 @@
 
 #include "log.h"
 
-char *logarr[3] = {"ERROR", "INFO", "DEBUG"};
+extern int current_log_level;
+char *logarr[] = {"ERROR", "INFO", "DEBUG"};
 
 void debug_log(const char *file, const char *func, int line, int level, const char *format, ...)
 {
 	va_list ap;
 	va_start(ap, format);
 
-	if (level < 0 || level > ERROR)
+	if (level < 0 || level > DEBUG)
 		return;
 
-	if (level <= LOG_LEVEL) {
-		fprintf(stderr, "[%s, %s, %d] %s: ", file, func, line, logarr[level]);
+	if (level <= current_log_level) {
+		fprintf(stderr, "[%s, %s(), ln %d] %s: ", file, func, line, logarr[level]);
 		vfprintf(stderr, format, ap);
 	}
 }

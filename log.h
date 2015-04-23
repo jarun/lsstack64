@@ -24,7 +24,6 @@
 #define ERROR 0
 #define INFO 1
 #define DEBUG 2
-#define LOG_LEVEL 1
 
 #define log(level, format, ...) debug_log(__FILE__, __FUNCTION__, __LINE__, level, format, ##__VA_ARGS__)
 void debug_log(const char *file, const char *func, int line, int level, const char *format, ...) __attribute__((__format__ (printf, 5, 6)));

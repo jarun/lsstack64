@@ -31,35 +31,17 @@
 
 #define WAIT_TIME 1000
 
-int main(int argc, char **argv)
+int process_stack(pid_t PID)
 {
 	unw_addr_space_t addrspace;
 	struct UPT_info *uptinfo = NULL;
 	unw_cursor_t cursor;
 	unw_word_t RIP, RBP;
 
-	pid_t PID = 1;
 	int ret = 0;
 	int wait_loops = 20;
 	int waitstatus;
 	int stopped = 0;
-
-	if (argc !=2) {
-		fprintf(stderr, "Usage: unwind PID\n");
-		return -1;
-	}
-
-	if ((PID = atoi(argv[1])) <= 0) {
-		fprintf(stderr, "Valid PID please!\n");
-		return -1;
-	}
-
-	if (kill(PID, 0) == 0)
-		fprintf(stdout, "Tracing PID: %d\n", PID);
-	else {
-		fprintf(stderr, "kill failed. errno: %d (%s)\n", errno, strerror(errno));
-		return -1;
-	}
 
 	/* Create address space for little endian */
 	addrspace = unw_create_addr_space(&_UPT_accessors, 0);
@@ -85,13 +67,15 @@ int main(int argc, char **argv)
 	}
 
 	if (!stopped) {
-		fprintf(stderr, "Target process couldn't be stopped\n");
+		fprintf(stderr, "Process %d couldn't be stopped\n", PID);
+		ret = -1;
 		goto bail;
 	}
 
 	uptinfo = (struct UPT_info *)_UPT_create(PID);
 	if (!uptinfo) {
 		fprintf(stderr, "_UPT_create failed\n");
+		ret = -1;
 		goto bail;
 	}
 
@@ -101,19 +85,49 @@ int main(int argc, char **argv)
 		goto bail;
 	}
 
-	if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RBP, &RBP)) {
+	if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RBP, &RBP) < 0) {
 		fprintf(stderr, "unw_get_reg RIP/RBP failed\n");
+		ret = -1;
 		goto bail;
 	}
 
 	fprintf(stdout, "RIP: 0x%lx\n", RIP);
 	fprintf(stdout, "RBP: 0x%lx\n", RBP);
 
+	ret = 0;
+
 bail:
 	if (uptinfo)
 		_UPT_destroy(uptinfo);
 	ptrace(PTRACE_DETACH, PID, NULL, NULL);
 	unw_destroy_addr_space(addrspace);
+
+	return ret;
+}
+
+int main(int argc, char **argv)
+{
+	pid_t PID = 1;
+
+	if (argc !=2) {
+		fprintf(stderr, "Usage: unwind PID\n");
+		return -1;
+	}
+
+	if ((PID = atoi(argv[1])) <= 0) {
+		fprintf(stderr, "Valid PID please!\n");
+		return -1;
+	}
+
+	if (kill(PID, 0) == 0)
+		fprintf(stdout, "Tracing PID: %d\n", PID);
+	else {
+		fprintf(stderr, "kill failed. errno: %d (%s)\n", errno, strerror(errno));
+		return -1;
+	}
+
+	if (process_stack(PID) != 0)
+		fprintf(stdout, "Process stack printing failed\n");
 
 	return 0;
 }

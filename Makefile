@@ -1,14 +1,19 @@
+CC = gcc
+CFLAGS = -W -Wall -g
+
+objects = log.o unwind.o
+
 all: lsstack unwind
 
 lsstack: lsstack.c
 	gcc -W -Wall -g -o lsstack64 lsstack.c -lbfd -liberty
 
-unwind: unwind.c
-	gcc -W -Wall -g -o unwind unwind.c -lunwind-x86_64 -lunwind-ptrace
+unwind: $(objects)
+	gcc -W -Wall -g -o unwind $(objects) -lunwind-x86_64 -lunwind-ptrace
 
+.PHONY: clean
 clean:
-	rm -f lsstack64
-	rm -f unwind
+	-rm -f lsstack64 unwind $(objects)
 
 distclean: clean
 	rm -f *~

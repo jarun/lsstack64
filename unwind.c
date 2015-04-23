@@ -30,32 +30,9 @@
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 
+#include "log.h"
+
 #define WAIT_TIME 1000
-
-/* Logging functions start */
-char *logarr[3] = {"ERROR", "INFO", "DEBUG"};
-#define ERROR 0
-#define INFO 1
-#define DEBUG 2
-#define LOG_LEVEL 1
-
-#define log(level, format, ...) debug_log(__FILE__, __FUNCTION__, __LINE__, level, format, ##__VA_ARGS__)
-void debug_log(const char *file, const char *func, int line, int level, const char *format, ...) __attribute__((__format__ (printf, 5, 6)));
-
-void debug_log(const char *file, const char *func, int line, int level, const char *format, ...)
-{
-	va_list ap;
-	va_start(ap, format);
-
-	if (level < 0 || level > ERROR)
-		return;
-
-	if (level <= LOG_LEVEL) {
-		fprintf(stderr, "[%s, %s, %d] %s: ", file, func, line, logarr[level]);
-		vfprintf(stderr, format, ap);
-	}
-}
-/* Logging functions end */
 
 int process_stack(pid_t PID)
 {

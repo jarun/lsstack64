@@ -35,4 +35,6 @@ void debug_log(const char *file, const char *func, int line, int level, const ch
 		fprintf(stderr, "[%s, %s(), ln %d] %s: ", file, func, line, logarr[level]);
 		vfprintf(stderr, format, ap);
 	}
+
+	va_end(ap);
 }

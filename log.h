@@ -18,6 +18,8 @@
  * along with tictactoe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma once
+
 #include <stdio.h>
 #include <stdarg.h>
 

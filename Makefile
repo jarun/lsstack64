@@ -6,10 +6,10 @@ objects = log.o unwind.o
 all: lsstack unwind
 
 lsstack: lsstack.c
-	gcc -W -Wall -g -o lsstack64 lsstack.c -lbfd -liberty
+	gcc $(CFLAGS) -o lsstack64 lsstack.c -lbfd -liberty
 
 unwind: $(objects)
-	gcc -W -Wall -g -o unwind $(objects) -lunwind-x86_64 -lunwind-ptrace
+	gcc $(CFLAGS) -o unwind $(objects) -lunwind-x86_64 -lunwind-ptrace
 
 .PHONY: clean
 clean:

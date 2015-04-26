@@ -1,7 +1,9 @@
 # lsstack64
 lsstack for x86_64 architecture.  
 A fork of the pstack utility for Solaris which works only for x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
-
+  
+License: While the original utility is GPLv2, the current project is licensed under GPLv3.  
+  
 **********
 NEWS  
 
@@ -11,9 +13,6 @@ NEWS
 
 15 Apr 2015: After some research, it turns out that x86_64 does NOT save the previous frame's frame pointer in RBP register (other than those compiled without -fomit-frame-pointer in GCC). The default optimization level in GCC is O2, which includes -fomit-frame-pointer. So the next strategy would be to use libunwind (http://www.nongnu.org/libunwind/).  
 **********  
-
-License: While the original utility is GPLv2, the current project is licensed under GPLv3.
-
 
 Important links:  
 http://sourceforge.net/projects/lsstack/  

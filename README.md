@@ -2,7 +2,8 @@
 lsstack for x86_64 architecture.  
 A fork of the pstack utility for Solaris which works only for x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
 
-** NEWS **  
+**********
+NEWS  
 
 25 Apr 2015: unwind.c is the new stub progam that uses libunwind to run through all the stack frames. The goal is to make unwind provide the information that pstack did.  
 

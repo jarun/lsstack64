@@ -18,10 +18,8 @@
  * along with tictactoe.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdarg.h>
 #include <errno.h>
 #include <string.h>
 #include <libunwind.h>
@@ -40,13 +38,16 @@ int process_stack(pid_t PID)
 {
 	unw_addr_space_t addrspace;
 	struct UPT_info *uptinfo = NULL;
+	unw_proc_info_t procinfo;
 	unw_cursor_t cursor;
-	unw_word_t RIP, RBP;
+	unw_word_t RIP, RSP, offset;
 
-	int ret = 0;
+	int ret = 0, step = 0;
 	int wait_loops = 20;
 	int waitstatus;
 	int stopped = 0;
+	char procname[512];
+	size_t len;
 
 	/* Create address space for little endian */
 	addrspace = unw_create_addr_space(&_UPT_accessors, 0);
@@ -90,14 +91,48 @@ int process_stack(pid_t PID)
 		goto bail;
 	}
 
-	if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RBP, &RBP) < 0) {
-		log(ERROR, "unw_get_reg RIP/RBP failed\n");
-		ret = -1;
-		goto bail;
-	}
+	do {
+		log(INFO, "STACK FRAME %d\n", step);
 
-	log(INFO, "RIP: 0x%lx\n", RIP);
-	log(INFO, "RBP: 0x%lx\n", RBP);
+		if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RBP, &RSP) < 0) {
+			log(ERROR, "unw_get_reg RIP/RSP failed\n");
+			ret = -1;
+			goto bail;
+		}
+
+		procname[0] = '\0';
+		unw_get_proc_name (&cursor, procname, sizeof(procname), &offset);
+		if (offset) {
+			len = strlen(procname);
+			if (len >= sizeof(procname) - 32)
+				len = sizeof(procname) - 32;
+			sprintf((char *)(procname + len), "+0x%016lx", (unsigned long)offset);
+		}
+		log(INFO, "RIP = 0x%016lx %-32s\n", RIP, procname);
+		log(INFO, "RSP = 0x%016lx\n", RSP);
+
+		ret = unw_get_proc_info (&cursor, &procinfo);
+		if (ret < 0) {
+			log(ERROR, "unw_get_proc_info failed. ret: %d\n", ret);
+			goto bail;
+		}
+
+		log(INFO, "frame range = (0x%016lx <-> 0x%016lx)\n", procinfo.start_ip, procinfo.end_ip);
+		log(INFO, "handler = %0lx lsda = %0lx\n\n\n", procinfo.handler, procinfo.lsda);
+
+		ret = unw_step(&cursor);
+		if (ret == 0) {
+			log(DEBUG, "Last frame reached\n");
+			goto bail;
+		} else if (ret < 0) {
+			log(ERROR, "unw_step failed. ret: %d\n", ret);
+			goto bail;
+		} else if (++step > 32) {
+			log(ERROR, "Too deeply nested. Breaking out.\n");
+			ret = -1;
+			goto bail;
+		}
+	} while (ret > 0);
 
 	ret = 0;
 
@@ -125,7 +160,7 @@ int main(int argc, char **argv)
 	}
 
 	if (kill(PID, 0) == 0)
-		log(INFO, "Tracing PID: %d\n", PID);
+		log(INFO, "Tracing PID: %d\n\n", PID);
 	else {
 		log(ERROR, "kill failed. errno: %d (%s)\n", errno, strerror(errno));
 		return -1;

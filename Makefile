@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -W -Wall -g
+CFLAGS = -W -Wall -Werror -g
 
 objects = log.o unwind.o
 

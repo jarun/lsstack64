@@ -46,7 +46,7 @@ int process_stack(pid_t PID)
 	int wait_loops = 20;
 	int waitstatus;
 	int stopped = 0;
-	char procname[512];
+	char procname[512] = {0};
 	size_t len;
 
 	/* Create address space for little endian */

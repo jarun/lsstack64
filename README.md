@@ -5,7 +5,7 @@ A fork of the pstack utility for Solaris which works only for x86 arch. Original
 License: While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
-Usage on x86_64:
+Usage on x86_64:  
 $ unwind PID
 //as long as you are the owner of the process, use sudo otherwise
   

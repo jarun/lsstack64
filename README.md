@@ -17,6 +17,8 @@ Usage:
 $ unwind PID  
 //as long as you are the owner of the process, use sudo otherwise  
   
+A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2  
+  
 **********
 # NEWS  
 

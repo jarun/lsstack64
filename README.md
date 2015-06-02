@@ -5,7 +5,7 @@ A fork of the pstack utility for Solaris which works only for x86 arch. Original
 License: While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
-# Instructions (tested on Ubuntu 14.04 x86_64  
+# Instructions (tested on Ubuntu 14.04 x86_64)  
 
 Compilation:  
 $ git clone https://github.com/jarun/lsstack64  

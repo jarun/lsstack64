@@ -6,7 +6,7 @@ License: While the original utility is GPLv2, the current project is licensed un
 
 **********
 Usage on x86_64:  
-$ unwind PID
+$ unwind PID  
 //as long as you are the owner of the process, use sudo otherwise
   
 **********

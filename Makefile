@@ -1,12 +1,14 @@
 CC = gcc
 CFLAGS = -W -Wall -Werror -g
 
-objects = log.o unwind.o
+logs = log.o
+
+objects = $(logs) unwind.o
 
 all: lsstack unwind
 
-lsstack: lsstack.c
-	gcc $(CFLAGS) -o lsstack64 lsstack.c -lbfd -liberty
+lsstack: $(logs) lsstack.c
+	gcc $(CFLAGS) -o lsstack64 lsstack.c $(logs) -lbfd -liberty
 
 unwind: $(objects)
 	gcc $(CFLAGS) -o unwind $(objects) -lunwind-x86_64 -lunwind-ptrace

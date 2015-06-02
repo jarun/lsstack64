@@ -29,7 +29,7 @@ A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2
 15 Apr 2015: After some research, it turns out that x86_64 does NOT save the previous frame's frame pointer in RBP register (other than those compiled without -fomit-frame-pointer in GCC). The default optimization level in GCC is O2, which includes -fomit-frame-pointer. So the next strategy would be to use libunwind (http://www.nongnu.org/libunwind/).  
 **********  
 
-# Important links:  
+# Important links  
 http://sourceforge.net/projects/lsstack/  
 http://lxr.free-electrons.com/source/arch/powerpc/boot/elf.h#L12  
 http://linux.die.net/man/2/ptrace  

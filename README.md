@@ -5,12 +5,20 @@ A fork of the pstack utility for Solaris which works only for x86 arch. Original
 License: While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
-Usage on x86_64:  
+# Instructions (tested on Ubuntu 14.04 x86_64  
+
+Compilation:  
+$ git clone https://github.com/jarun/lsstack64  
+$ cd lsstack64  
+$ make  
+$ sudo make install  
+  
+Usage:  
 $ unwind PID  
-//as long as you are the owner of the process, use sudo otherwise
+//as long as you are the owner of the process, use sudo otherwise  
   
 **********
-NEWS  
+# NEWS  
 
 25 Apr 2015: unwind.c is the new stub progam that uses libunwind to run through all the stack frames. The goal is to make unwind provide the information that pstack did.  
 
@@ -19,7 +27,7 @@ NEWS
 15 Apr 2015: After some research, it turns out that x86_64 does NOT save the previous frame's frame pointer in RBP register (other than those compiled without -fomit-frame-pointer in GCC). The default optimization level in GCC is O2, which includes -fomit-frame-pointer. So the next strategy would be to use libunwind (http://www.nongnu.org/libunwind/).  
 **********  
 
-Important links:  
+# Important links:  
 http://sourceforge.net/projects/lsstack/  
 http://lxr.free-electrons.com/source/arch/powerpc/boot/elf.h#L12  
 http://linux.die.net/man/2/ptrace  

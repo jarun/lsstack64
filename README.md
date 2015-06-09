@@ -15,12 +15,15 @@ $ sudo make install
   
 Usage:  
 $ unwind PID  
-//as long as you are the owner of the process, use sudo otherwise  
+// as long as you are the owner of the process, use sudo otherwise  
+// unwind is the test program on x86_64. The functionality will be merged to lsstack64.
   
 A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2  
   
 **********
 # NEWS  
+
+03 Jun 2015: Merging unwind.c fnctionality to lsstack64 started. New logging mechanism incorporated into lsstack64.  
 
 25 Apr 2015: unwind.c is the new stub progam that uses libunwind to run through all the stack frames. The goal is to make unwind provide the information that pstack did.  
 

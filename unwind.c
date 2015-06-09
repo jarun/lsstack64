@@ -40,7 +40,7 @@ int process_stack(pid_t PID)
 	struct UPT_info *uptinfo = NULL;
 	unw_proc_info_t procinfo;
 	unw_cursor_t cursor;
-	unw_word_t RIP, RSP, offset;
+	unw_word_t RIP, RSP, RBP, offset;
 
 	int ret = 0, step = 0;
 	int wait_loops = 20;
@@ -94,8 +94,9 @@ int process_stack(pid_t PID)
 	do {
 		log(INFO, "STACK FRAME %d\n", step);
 
-		if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RBP, &RSP) < 0) {
-			log(ERROR, "unw_get_reg RIP/RSP failed\n");
+		if (unw_get_reg(&cursor, UNW_X86_64_RIP, &RIP) < 0 || unw_get_reg(&cursor, UNW_X86_64_RSP, &RSP) < 0
+				|| unw_get_reg(&cursor, UNW_X86_64_RBP, &RBP) < 0) {
+			log(ERROR, "unw_get_reg RIP/RSP/RBP failed\n");
 			ret = -1;
 			goto bail;
 		}
@@ -109,7 +110,7 @@ int process_stack(pid_t PID)
 			sprintf((char *)(procname + len), "+0x%016lx", (unsigned long)offset);
 		}
 		log(INFO, "RIP = 0x%016lx %-32s\n", RIP, procname);
-		log(INFO, "RSP = 0x%016lx\n", RSP);
+		log(INFO, "RSP = 0x%016lx RBP = 0x%016lx\n", RSP, RBP);
 
 		ret = unw_get_proc_info (&cursor, &procinfo);
 		if (ret < 0) {

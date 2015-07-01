@@ -2,7 +2,9 @@
 lsstack for x86_64 architecture.  
 A fork of the pstack utility for Solaris which works only for x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
   
-License: While the original utility is GPLv2, the current project is licensed under GPLv3.  
+# License  
+  
+While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
 # Instructions (tested on Ubuntu 14.04 x86_64)  

@@ -42,3 +42,5 @@ http://linux.die.net/include/sys/user.h
 http://lxr.free-electrons.com/source/arch/x86/include/asm/ptrace.h?v=3.3  
 http://www.nongnu.org/libunwind/man/libunwind(3).html#section_3  
 http://manpages.ubuntu.com/manpages/trusty/en/man3/libunwind-ptrace.3.html  
+http://stackoverflow.com/questions/3194479/relation-between-program-instruction-pointerrip-and-base-frame-pointerrbp-on  
+http://stackoverflow.com/questions/8625352/x86-64-calling-conventions-and-stack-frames

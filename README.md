@@ -23,7 +23,7 @@ $ unwind PID
 A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2  
   
 **********
-# NEWS  
+# News  
 
 03 Jun 2015: Merging unwind.c fnctionality to lsstack64 started. New logging mechanism incorporated into lsstack64.  
 
@@ -44,3 +44,7 @@ http://www.nongnu.org/libunwind/man/libunwind(3).html#section_3
 http://manpages.ubuntu.com/manpages/trusty/en/man3/libunwind-ptrace.3.html  
 http://stackoverflow.com/questions/3194479/relation-between-program-instruction-pointerrip-and-base-frame-pointerrbp-on  
 http://stackoverflow.com/questions/8625352/x86-64-calling-conventions-and-stack-frames
+  
+**********
+# Contributions  
+[Ellié Computing](http://www.elliecomputing.com/) contributes to this project by giving free licences of ECMerge, comparison/merge tool.

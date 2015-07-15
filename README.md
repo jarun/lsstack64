@@ -25,6 +25,8 @@ A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2
 **********
 # News  
 
+15 Jul 2015: TODO: Add support for threads.
+
 03 Jun 2015: Merging unwind.c fnctionality to lsstack64 started. New logging mechanism incorporated into lsstack64.  
 
 25 Apr 2015: unwind.c is the new stub progam that uses libunwind to run through all the stack frames. The goal is to make unwind provide the information that pstack did.  

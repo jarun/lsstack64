@@ -20,7 +20,7 @@ $ unwind PID
 // as long as you are the owner of the process, use sudo otherwise  
 // unwind is the test program on x86_64. The functionality will be merged to lsstack64.
   
-A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2  
+A sample output with Leafpad editor that runs 2 threads: http://paste.ubuntu.com/11886313/ 
   
 **********
 # News  

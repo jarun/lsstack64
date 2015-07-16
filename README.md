@@ -37,15 +37,22 @@ A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2
 **********  
 
 # Important links  
+http://www.nongnu.org/libunwind/index.html  
+http://www.nongnu.org/libunwind/man/libunwind(3).html#section_3  
+http://www.nongnu.org/libunwind/man/libunwind-ptrace%283%29.html  
+http://savannah.nongnu.org/git/?group=libunwind  
 http://sourceforge.net/projects/lsstack/  
 http://lxr.free-electrons.com/source/arch/powerpc/boot/elf.h#L12  
 http://linux.die.net/man/2/ptrace  
 http://linux.die.net/include/sys/user.h  
 http://lxr.free-electrons.com/source/arch/x86/include/asm/ptrace.h?v=3.3  
-http://www.nongnu.org/libunwind/man/libunwind(3).html#section_3  
 http://manpages.ubuntu.com/manpages/trusty/en/man3/libunwind-ptrace.3.html  
 http://stackoverflow.com/questions/3194479/relation-between-program-instruction-pointerrip-and-base-frame-pointerrbp-on  
 http://stackoverflow.com/questions/8625352/x86-64-calling-conventions-and-stack-frames  
+http://blog.bigpixel.ro/2010/09/stack-unwinding-stack-trace-with-gcc/  
+http://stackoverflow.com/questions/7516273/using-libunwind-on-hp-ux-and-getting-stacktrace  
+http://lists.nongnu.org/archive/html/libunwind-devel/2011-11/msg00002.html  
+
   
 // Threads  
 http://stackoverflow.com/questions/6402160/getting-a-backtrace-of-other-thread  

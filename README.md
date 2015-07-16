@@ -25,7 +25,7 @@ A sample output with SRWare Iron browser: http://pastebin.com/vTFhDUD2
 **********
 # News  
 
-15 Jul 2015: TODO: Add support for threads.
+16 Jul 2015: Implemented thread tracing support.
 
 03 Jun 2015: Merging unwind.c fnctionality to lsstack64 started. New logging mechanism incorporated into lsstack64.  
 
@@ -45,7 +45,13 @@ http://lxr.free-electrons.com/source/arch/x86/include/asm/ptrace.h?v=3.3
 http://www.nongnu.org/libunwind/man/libunwind(3).html#section_3  
 http://manpages.ubuntu.com/manpages/trusty/en/man3/libunwind-ptrace.3.html  
 http://stackoverflow.com/questions/3194479/relation-between-program-instruction-pointerrip-and-base-frame-pointerrbp-on  
-http://stackoverflow.com/questions/8625352/x86-64-calling-conventions-and-stack-frames
+http://stackoverflow.com/questions/8625352/x86-64-calling-conventions-and-stack-frames  
+  
+// Threads  
+http://stackoverflow.com/questions/6402160/getting-a-backtrace-of-other-thread  
+http://comments.gmane.org/gmane.comp.lib.unwind.devel/696
+http://stackoverflow.com/questions/11468333/linux-threads-suspend-resume
+http://stackoverflow.com/questions/18577956/how-to-use-ptrace-to-get-a-consistent-view-of-multiple-threads
   
 **********
 # Contributions  

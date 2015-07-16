@@ -1,6 +1,6 @@
 # lsstack64
 lsstack for x86_64 architecture.  
-A fork of the pstack utility for Solaris which works only for x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
+A fork of the pstack utility for Solaris which works only on x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
   
 # License  
   

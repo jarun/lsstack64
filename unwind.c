@@ -48,6 +48,9 @@ int process_stack(pid_t PID)
 	int stopped = 0;
 	char procname[512] = {0};
 	size_t len;
+	FILE* fp;
+	char psbuf[64];
+	pid_t MID = -1; /* Main thread ID */
 
 	/* Create address space for little endian */
 	addrspace = unw_create_addr_space(&_UPT_accessors, 0);
@@ -56,9 +59,79 @@ int process_stack(pid_t PID)
 		return -1;
 	}
 
+	sprintf(psbuf, "%s %d %s", "ps -aeLf | grep -w", PID, "| awk '{ print $2, $4 }'");
+	log(DEBUG, "%s\n", psbuf);
+	fp = popen(psbuf, "r");
+	if (fp) {
+		char pid[16] = {0};
+		char lwp[16] = {0};
+		int i, j;
+		while (fgets(psbuf, sizeof(psbuf) - 1, fp) != NULL) {
+			for (i = 0; psbuf[i] != '\n' && psbuf[i] != '\0'; i++) {
+				if (psbuf[i] == ' ')
+					break;
+				else
+					pid[i] = psbuf[i];
+			}
+
+			pid[++i] = '\0';
+			j = 0;
+
+			for (; psbuf[i] != '\n' && psbuf[i] != '\0'; i++)
+				lwp[j++] = psbuf[i];
+
+			lwp[j] = '\0';
+
+			log(DEBUG, "From ps: pid [%s] lwp [%s]\n", pid, lwp);
+
+			if (pid[0] && lwp[0]) {
+				if (PID == atoi(lwp)) {
+					if (strcmp(lwp, pid) == 0) {
+						log(DEBUG, "This is the main thread.\n");
+						break;
+					} else {
+						MID = atoi(pid);
+						log(DEBUG, "This is a child thread of main thread %d.\n", MID);
+						break;
+					}
+				}
+			}
+		}
+
+		pclose(fp);
+	} else {
+		log(ERROR, "popen failed. errno: %d (%s)\n", errno, strerror(errno));
+	}
+
+	if (MID != -1) {
+		ret = ptrace(PTRACE_ATTACH, MID, NULL, NULL);
+		if (0 != ret && 0 != errno) {
+			log(ERROR, "ptrace failed. errno: %d (%s)\n", errno, strerror(errno));
+			unw_destroy_addr_space(addrspace);
+			return -1;
+		}
+
+		while (wait_loops-- > 0) {
+			ret = waitpid(MID, &waitstatus, WUNTRACED | WNOHANG);
+			if (WIFSTOPPED(waitstatus)) {
+				stopped = 1;
+				break;
+			}
+			usleep(WAIT_TIME);
+		}
+
+		if (!stopped) {
+			log(ERROR, "Main thread of process %d couldn't be stopped\n", MID);
+			ret = -1;
+			goto bail;
+		}
+	}
+
         ret = ptrace(PTRACE_ATTACH, PID, NULL, NULL);
         if (0 != ret && 0 != errno) {
 		log(ERROR, "ptrace failed. errno: %d (%s)\n", errno, strerror(errno));
+		if (MID != -1)
+			ptrace(PTRACE_DETACH, MID, NULL, NULL);
 		unw_destroy_addr_space(addrspace);
 		return -1;
         }
@@ -141,6 +214,8 @@ bail:
 	if (uptinfo)
 		_UPT_destroy(uptinfo);
 	ptrace(PTRACE_DETACH, PID, NULL, NULL);
+	if (MID != -1)
+		ptrace(PTRACE_DETACH, MID, NULL, NULL);
 	unw_destroy_addr_space(addrspace);
 
 	return ret;

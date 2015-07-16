@@ -48,6 +48,7 @@ int process_stack(pid_t PID)
 	int stopped = 0;
 	char procname[512] = {0};
 	size_t len;
+
 	FILE* fp;
 	char psbuf[64];
 	pid_t MID = -1; /* Main thread ID */
@@ -59,12 +60,14 @@ int process_stack(pid_t PID)
 		return -1;
 	}
 
+	/* Check if this is the main thread or a child thread.
+	   If child thread, we need to stop main thread as well. */
 	sprintf(psbuf, "%s %d %s", "ps -aeLf | grep -w", PID, "| awk '{ print $2, $4 }'");
 	log(DEBUG, "%s\n", psbuf);
 	fp = popen(psbuf, "r");
 	if (fp) {
 		char pid[16] = {0};
-		char lwp[16] = {0};
+		char lwp[16] = {0}; /* LWP: Light Weight Process. LWP == PID for main thread. */
 		int i, j;
 		while (fgets(psbuf, sizeof(psbuf) - 1, fp) != NULL) {
 			for (i = 0; psbuf[i] != '\n' && psbuf[i] != '\0'; i++) {

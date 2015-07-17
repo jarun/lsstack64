@@ -7,18 +7,22 @@ A fork of the pstack utility for Solaris which works only on x86 arch. Originall
 While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
-# Instructions (tested on Ubuntu 14.04 x86_64)  
+# Compilation (tested on Ubuntu 14.04 x86_64)  
 
-Compilation:  
 $ git clone https://github.com/jarun/lsstack64  
 $ cd lsstack64  
 $ make  
 $ sudo make install  
   
-Usage:  
-$ unwind PID  
+# Usage  
+$ unwind LWP  
 // as long as you are the owner of the process, use sudo otherwise  
-// unwind is the test program on x86_64. The functionality will be merged to lsstack64.
+
+LWP stands for Light Weight Process. In simpler terms it is the thread ID.  
+It is shown in the fourth column in the output of  
+$ ps -aeLf  
+For the main thread of a process LWD == PID, for child threads they are different.  
+unwind is the test program on x86_64. The functionality will be merged to lsstack64.
   
 A sample output with Leafpad editor that runs 2 threads: http://paste.ubuntu.com/11886313/ 
   

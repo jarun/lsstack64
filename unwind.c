@@ -31,6 +31,7 @@
 #include "log.h"
 
 #define WAIT_TIME 1000
+#define MAX_STACK_DEPTH 32
 
 int current_log_level = DEBUG;
 
@@ -63,7 +64,7 @@ int process_stack(pid_t PID)
 	/* Check if this is the main thread or a child thread.
 	   If child thread, we need to stop main thread as well. */
 	sprintf(psbuf, "%s %d %s", "ps -aeLf | grep -w", PID, "| awk '{ print $2, $4 }'");
-	log(DEBUG, "%s\n", psbuf);
+
 	fp = popen(psbuf, "r");
 	if (fp) {
 		char pid[16] = {0};
@@ -90,11 +91,11 @@ int process_stack(pid_t PID)
 			if (pid[0] && lwp[0]) {
 				if (PID == atoi(lwp)) {
 					if (strcmp(lwp, pid) == 0) {
-						log(DEBUG, "This is the main thread.\n");
+						log(DEBUG, "This is the main thread.\n\n\n");
 						break;
 					} else {
 						MID = atoi(pid);
-						log(DEBUG, "This is a child thread of main thread %d.\n", MID);
+						log(DEBUG, "This is a child thread of main thread %d.\n\n\n", MID);
 						break;
 					}
 				}
@@ -204,7 +205,7 @@ int process_stack(pid_t PID)
 		} else if (ret < 0) {
 			log(ERROR, "unw_step failed. ret: %d\n", ret);
 			goto bail;
-		} else if (++step > 32) {
+		} else if (++step > MAX_STACK_DEPTH) {
 			log(ERROR, "Too deeply nested. Breaking out.\n");
 			ret = -1;
 			goto bail;

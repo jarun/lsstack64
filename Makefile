@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -W -Wall -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g
 
 logs = log.o
 

@@ -1,6 +1,8 @@
 # lsstack64
-lsstack for x86_64 architecture.  
+Process execution stack tracer for x86_64 architecture. Per-thread tracing is possible.  
 A fork of the pstack utility for Solaris which works only on x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
+  
+A sample output with Leafpad editor that runs 2 threads: http://paste.ubuntu.com/11886313/
   
 # License  
   
@@ -24,8 +26,6 @@ It is shown in the fourth column in the output of
 $ ps -aeLf  
 For the main thread of a process LWD == PID, for child threads they are different.  
 unwind is the test program on x86_64. The functionality will be merged to lsstack64.
-  
-A sample output with Leafpad editor that runs 2 threads: http://paste.ubuntu.com/11886313/ 
   
 **********
 # News  

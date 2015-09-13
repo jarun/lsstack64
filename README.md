@@ -21,7 +21,7 @@ $ sudo make install</pre>
 <pre>$ unwind LWP
 // as long as you are the owner of the process, use sudo otherwise</pre>
 
-LWP stands for Light Weight Process. In simpler terms it is the thread ID.  
+LWP stands for `Light Weight Process`. In simpler terms it is the thread ID.  
 It is shown in the fourth column in the output of  
 <pre>$ ps -aeLf</pre>
 For the main thread of a process LWD == PID, for child threads they are different.  

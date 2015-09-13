@@ -9,21 +9,21 @@ A sample output with Leafpad editor that runs 2 threads: http://paste.ubuntu.com
 While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
-# Compilation (tested on Ubuntu 14.04 x86_64)  
+# Compilation (tested on Ubuntu 14.04.3 x86_64)  
 
-$ sudo apt-get install libunwind8 libunwind8-dev  
-$ git clone https://github.com/jarun/lsstack64  
-$ cd lsstack64  
-$ make  
-$ sudo make install  
+<pre>$ sudo apt-get install libunwind8 libunwind8-dev
+$ git clone https://github.com/jarun/lsstack64
+$ cd lsstack64
+$ make
+$ sudo make install</pre>
   
 # Usage  
-$ unwind LWP  
-// as long as you are the owner of the process, use sudo otherwise  
+<pre>$ unwind LWP
+// as long as you are the owner of the process, use sudo otherwise</pre>
 
 LWP stands for Light Weight Process. In simpler terms it is the thread ID.  
 It is shown in the fourth column in the output of  
-$ ps -aeLf  
+<pre>$ ps -aeLf</pre>
 For the main thread of a process LWD == PID, for child threads they are different.  
 unwind is the test program on x86_64. The functionality will be merged to lsstack64.
   

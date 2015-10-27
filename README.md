@@ -9,7 +9,8 @@ A sample output with Leafpad editor that runs 2 threads: http://paste.ubuntu.com
 While the original utility is GPLv2, the current project is licensed under GPLv3.  
 
 **********
-# Compilation (tested on Ubuntu 14.04.3 x86_64)  
+# Compilation
+Tested on Ubuntu 14.04.3 x86_64  
 
 <pre>$ sudo apt-get install libunwind8 libunwind8-dev
 $ git clone https://github.com/jarun/lsstack64

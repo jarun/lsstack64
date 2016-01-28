@@ -9,9 +9,11 @@ all: lsstack unwind
 
 lsstack: $(logs) lsstack.c
 	gcc $(CFLAGS) -o lsstack64 lsstack.c $(logs) -lbfd -liberty
+	strip lsstack64
 
 unwind: $(objects)
 	gcc $(CFLAGS) -o unwind $(objects) -lunwind-x86_64 -lunwind-ptrace
+	strip unwind
 
 .PHONY: clean
 clean:

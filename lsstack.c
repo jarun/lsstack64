@@ -910,7 +910,6 @@ int main(int argc, char** argv)
 	memset(&buf, 0, sizeof(struct utsname));
 
 	if (uname(&buf) == 0) {
-		log(DEBUG, "machine: %s\n", buf.machine);
 		if (strcmp(buf.machine, "x86_64") == 0) {
 			log(ERROR, "lsstack64 fails on x86_64 platform. Use unwind.");
 			return -1;

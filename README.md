@@ -12,7 +12,7 @@ While the original utility is GPLv2, the current project is licensed under GPLv3
 # Compilation
 Tested on Ubuntu 14.04.3 x86_64  
 
-<pre>$ sudo apt-get install libunwind8 libunwind8-dev
+<pre>$ sudo apt-get install binutils-dev libiberty-dev libunwind8-dev
 $ git clone https://github.com/jarun/lsstack64
 $ cd lsstack64
 $ make

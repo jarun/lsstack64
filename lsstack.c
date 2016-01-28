@@ -32,6 +32,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 #include <linux/stddef.h>
 #include <stdlib.h>
@@ -61,7 +62,7 @@
 #define true !false
 #endif
 
-int current_log_level = INFO;
+int current_log_level = DEBUG;
 static int debug_option = 1;
 static int execute_option = 0;
 static int period_option = 0;
@@ -893,7 +894,7 @@ static void fatal(char* s)
 
 static void usage()
 {
-	log(INFO, "lsstack: [-v] [-D] [-p peridod_in_ms] [-o file_to_append] {<pid> | -e program arguments}\n");
+	printf("lsstack: [-v] [-D] [-p peridod_in_ms] [-o file_to_append] {<pid> | -e program arguments}\n");
 	exit(1);
 }
 
@@ -904,7 +905,19 @@ int main(int argc, char** argv)
 	int ret = 0;
 	process_info *pi = NULL;
 	int option_position = 1;
-	
+
+	struct utsname buf;
+	memset(&buf, 0, sizeof(struct utsname));
+
+	if (uname(&buf) == 0) {
+		log(DEBUG, "machine: %s\n", buf.machine);
+		if (strcmp(buf.machine, "x86_64") == 0) {
+			log(ERROR, "lsstack64 fails on x86_64 platform. Use unwind.");
+			return -1;
+		}
+	} else
+		log(ERROR, "uname() failed. Assuming 32-bit platform.");
+
 	while ( option_position < (argc-1) && *argv[option_position] == '-') {
 		switch (*(argv[option_position]+1)) {
 			case 'v':

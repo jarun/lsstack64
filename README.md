@@ -2,7 +2,7 @@
 Process execution stack tracer for x86_64 architecture. Per-thread tracing is possible.  
 A fork of the pstack utility for Solaris which works only on x86 arch. Originally it's not even compilable on x86_64. The current project is an attempt to make it work on x86_64 Linux.  
   
-[Sample output](http://paste.ubuntu.com/11886313/) with Leafpad editor that runs 2 threads.
+[**Sample output**](http://paste.ubuntu.com/11886313/) with Leafpad editor that runs 2 threads.
 
 If you find `lsstack64` useful, please consider donating via PayPal.
 [![Donate Button](https://img.shields.io/badge/paypal-donate-orange.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q)

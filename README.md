@@ -5,7 +5,7 @@ A fork of the pstack utility for Solaris which works only on x86 arch. Originall
 [**Sample output**](http://paste.ubuntu.com/11886313/) with Leafpad editor that runs 2 threads.
 
 If you find `lsstack64` useful, please consider donating via PayPal.
-[![Donate Button](https://img.shields.io/badge/paypal-donate-orange.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q)
+[![Donate Button](https://img.shields.io/badge/paypal-donate-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q)
 
 ## License
 
